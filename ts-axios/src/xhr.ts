@@ -1,7 +1,7 @@
-import { AxiosRequestConfig, AxiosPromise } from './types'
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types'
 
-export default function xhr(config: AxiosRequestConfig): AxiosPromise  {
-  return new Promise((resolve) => {
+export default function xhr(config: AxiosRequestConfig): AxiosPromise {
+  return new Promise(resolve => {
     // 解构赋值 并且给默认值
     const { data = null, url, method = 'get', headers, responseType } = config
     // 新建实例
@@ -11,14 +11,23 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise  {
     }
     // 方法默认要大写 method.toLocaleUpperCase()
     request.open(method.toLocaleUpperCase(), url, true)
-    request.onreadystatechange = function handleLoad () {
+    request.onreadystatechange = function handleLoad() {
       if (request.readyState !== 4) {
         return
       }
       const responseHeaders = request.getAllResponseHeaders()
       const responseData = responseType !== 'text' ? request.response : request.responseText
+      const response: AxiosResponse = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config,
+        request
+      }
+      resolve(response)
     }
-    Object.keys(headers).forEach((name) => {
+    Object.keys(headers).forEach(name => {
       if (data === null && name.toLowerCase() === 'content-type') {
         delete headers[name]
       } else {
