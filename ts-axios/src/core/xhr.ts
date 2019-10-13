@@ -1,6 +1,6 @@
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types'
-import { parseHeaders } from './helpers/headers'
-import { createError } from './helpers/error'
+import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '../types'
+import { parseHeaders } from '../helpers/headers'
+import { createError } from '../helpers/error'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -17,7 +17,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     // 方法默认要大写 method.toLocaleUpperCase()
-    request.open(method.toLocaleUpperCase(), url, true)
+    // 类型断言 url不为空，在url后面加上！即可
+    request.open(method.toLocaleUpperCase(), url!, true)
     request.onreadystatechange = function handleLoad() {
       if (request.readyState !== 4) {
         return
@@ -40,21 +41,13 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     request.onerror = function handleError() {
-      reject(createError(
-        'Network Error',
-        config,
-        null,
-        request
-      ))
+      reject(createError('Network Error', config, null, request))
     }
 
-    request.ontimeout = function handleTimeout () {
-      reject(createError(
-        `Timeout of ${config.timeout} ms exceeded`,
-        config,
-        'ECONNABORTED',
-        request
-      ))
+    request.ontimeout = function handleTimeout() {
+      reject(
+        createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request)
+      )
     }
 
     Object.keys(headers).forEach(name => {
@@ -71,13 +64,15 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         // 200-300 之间的 HTTP 状态码处理
         resolve(response)
       } else {
-        reject(createError(
-          `Request failed with status code ${response.status}`,
-          config,
-          null,
-          request,
-          response
-        ))
+        reject(
+          createError(
+            `Request failed with status code ${response.status}`,
+            config,
+            null,
+            request,
+            response
+          )
+        )
       }
     }
   })
