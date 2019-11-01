@@ -28,6 +28,15 @@ export interface AxiosRequestConfig {
   transformRequest: AxiosTransformer | AxiosTransformer[]
   transformResponse: AxiosTransformer | AxiosTransformer[]
   cancelToken?: cancelToken
+  withCredentials?: boolean
+  xsrfCookieName?: string
+  xsrfHeaderName?: string
+  onDownloadProgress?: (e: ProgressEvent) => void
+  onUploadProgress?: (e: ProgressEvent) => void
+  auth?: AxiosBasicCredentials
+  validateStatus?: (status: number) => boolean
+  paramsSerializer?: (params: any) => string
+  baseURL?: string
 
   [propName: string]: any
 }
@@ -88,6 +97,10 @@ export interface AxiosInstance extends Axios {
 
 export interface AxiosStatic extends AxiosInstance {
   create(config?: AxiosRequestConfig): AxiosInstance
+
+  all<T>(promise: Array<T | Promise <T>>): Promise<T[]>
+
+  spread<T, R>(callback:(...args: T[]) => R): (arr: T[]) => R
 }
 
 // 拦截器管理类
@@ -121,4 +134,9 @@ export interface Canceler {
 // cancelToken构造函数参数类型
 export interface CancelExecutor {
   (cancel: Canceler): void
+}
+
+export interface AxiosBasicCredentials {
+  username: string
+  password: string
 }
