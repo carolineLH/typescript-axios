@@ -13,7 +13,9 @@ function normalizeHeaderName (headers: any, normalizedName: string): void {
   })
 }
 
+// 处理Content-Type
 export function processHeaders (headers: any, data: any): any {
+  // 当传入了Content-Type的时候用传入的
   normalizeHeaderName(headers, 'Content-Type')
   
   if (isPlainObject(data)) {
